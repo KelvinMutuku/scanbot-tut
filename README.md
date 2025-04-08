@@ -2,53 +2,38 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+#Requirements
+Node.js (version 18 or higher)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#Project setup
+We’ll be using Vite to set up our project. Vite is a modern build tool optimized for speed and performance.
 
-## Expanding the ESLint configuration
+Open a terminal and create a new Vite project with the following command:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+npm create vite@latest
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+You will be asked to name your project. For this tutorial, let’s go with “scanbot-tut”.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then, when prompted to select a framework, choose React and select TypeScript as the variant.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#Now run:
+cd scanbot-tut
+npm install
+npm run dev
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+#Initializing the SDK
+Open another terminal, navigate to your project folder, and install the scanbot-web-sdk package with the following command:
+npm i scanbot-web-sdk
+The SDK contains WebAssembly binaries that should be hosted on your server. We ship these binaries with the npm package. Since Node.js doesn’t automatically copy the binaries to the target, you need to manually copy them to the desired destination (we recommend the public asset directory).
+
+You can quickly copy them from node_modules to a folder called wasm in the public asset directory using the following command:
+
+mkdir -p public/wasm && cp -r node_modules/scanbot-web-sdk/bundle/bin/barcode-scanner/* public/wasm
+
+💡 To ensure these files are always copied to the same directory for all users and updated when the SDK itself is updated, you can add the command as a post-installation script to your package.json:
+
+"postinstall": "mkdir -p public/wasm && cp -r node_modules/scanbot-web-sdk/bundle/bin/barcode-scanner/* public/wasm"
+
+Back in App.tsx, add the code to import ScanbotSDK at the top of the file:
+
+import ScanbotSDK from 'scanbot-web-sdk/ui';
